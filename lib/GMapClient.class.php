@@ -208,7 +208,7 @@ class GMapClient
     }
 
     $apiURL = self::API_URL.'&output='.$format.'&key='.$this->getAPIKey().'&q='.urlencode($address);
-    $raw_data = file_get_contents($apiURL);
+    $raw_data = @file_get_contents($apiURL);
 
     if ($this->hasCache())
     {
