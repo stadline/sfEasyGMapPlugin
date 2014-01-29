@@ -19,53 +19,147 @@ class GMapClientTestCache extends sfCache
     $format = substr($key,0,3);
     switch($format)
     {
-      case 'csv':
-        return '200,8,48.8537950,2.3369433';
-        break;
       case 'xml':
-        return '<?xml version="1.0" encoding="UTF-8" ?>
-<kml xmlns="http://earth.google.com/kml/2.0"><Response>
-  <name>60 rue de Seine, Paris</name>
-  <Status>
-    <code>200</code>
-    <request>geocode</request>
-  </Status>
-  <Placemark id="p1">
-
-    <address>60 Rue de Seine, 75006 Paris, France</address>
-    <AddressDetails Accuracy="8" xmlns="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0"><Country><CountryNameCode>FR</CountryNameCode><CountryName>France</CountryName><AdministrativeArea><AdministrativeAreaName>Île-de-France</AdministrativeAreaName><SubAdministrativeArea><SubAdministrativeAreaName>Paris</SubAdministrativeAreaName><Locality><LocalityName>Paris</LocalityName><Thoroughfare><ThoroughfareName>60 Rue de Seine</ThoroughfareName></Thoroughfare><PostalCode><PostalCodeNumber>75006</PostalCodeNumber></PostalCode></Locality></SubAdministrativeArea></AdministrativeArea></Country></AddressDetails>
-    <ExtendedData>
-      <LatLonBox north="48.8569426" south="48.8506474" east="2.3400909" west="2.3337957" />
-    </ExtendedData>
-
-    <Point><coordinates>2.3369433,48.8537950,0</coordinates></Point>
-  </Placemark>
-</Response></kml>';
+        return '<?xml version="1.0" encoding="UTF-8"?>
+<GeocodeResponse>
+ <status>OK</status>
+ <result>
+  <type>street_address</type>
+  <formatted_address>60 Rue de Seine, 75006 Paris, France</formatted_address>
+  <address_component>
+   <long_name>60</long_name>
+   <short_name>60</short_name>
+   <type>street_number</type>
+  </address_component>
+  <address_component>
+   <long_name>Rue de Seine</long_name>
+   <short_name>Rue de Seine</short_name>
+   <type>route</type>
+  </address_component>
+  <address_component>
+   <long_name>6e Arrondissement</long_name>
+   <short_name>6e Arrondissement</short_name>
+   <type>sublocality</type>
+   <type>political</type>
+  </address_component>
+  <address_component>
+   <long_name>Paris</long_name>
+   <short_name>Paris</short_name>
+   <type>locality</type>
+   <type>political</type>
+  </address_component>
+  <address_component>
+   <long_name>Paris</long_name>
+   <short_name>75</short_name>
+   <type>administrative_area_level_2</type>
+   <type>political</type>
+  </address_component>
+  <address_component>
+   <long_name>Île-de-France</long_name>
+   <short_name>IDF</short_name>
+   <type>administrative_area_level_1</type>
+   <type>political</type>
+  </address_component>
+  <address_component>
+   <long_name>France</long_name>
+   <short_name>FR</short_name>
+   <type>country</type>
+   <type>political</type>
+  </address_component>
+  <address_component>
+   <long_name>75006</long_name>
+   <short_name>75006</short_name>
+   <type>postal_code</type>
+  </address_component>
+  <geometry>
+   <location>
+    <lat>48.8534920</lat>
+    <lng>2.3369230</lng>
+   </location>
+   <location_type>ROOFTOP</location_type>
+   <viewport>
+    <southwest>
+     <lat>48.8521430</lat>
+     <lng>2.3355740</lng>
+    </southwest>
+    <northeast>
+     <lat>48.8548410</lat>
+     <lng>2.3382720</lng>
+    </northeast>
+   </viewport>
+  </geometry>
+ </result>
+</GeocodeResponse>';
         break;
-      case 'json':
+      case 'jso':
       default:
         return '{
-  "name": "60 rue de Seine, Paris",
-  "Status": {
-    "code": 200,
-    "request": "geocode"
-  },
-  "Placemark": [ {
-    "id": "p1",
-    "address": "60 Rue de Seine, 75006 Paris, France",
-    "AddressDetails": {"Country": {"CountryNameCode": "FR","CountryName": "France","AdministrativeArea": {"AdministrativeAreaName": "Île-de-France","SubAdministrativeArea": {"SubAdministrativeAreaName": "Paris","Locality": {"LocalityName": "Paris","Thoroughfare":{"ThoroughfareName": "60 Rue de Seine"},"PostalCode": {"PostalCodeNumber": "75006"}}}}},"Accuracy": 8},
-    "ExtendedData": {
-      "LatLonBox": {
-        "north": 48.8569426,
-        "south": 48.8506474,
-        "east": 2.3400909,
-        "west": 2.3337957
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "60",
+               "short_name" : "60",
+               "types" : [ "street_number" ]
+            },
+            {
+               "long_name" : "Rue de Seine",
+               "short_name" : "Rue de Seine",
+               "types" : [ "route" ]
+            },
+            {
+               "long_name" : "6e Arrondissement",
+               "short_name" : "6e Arrondissement",
+               "types" : [ "sublocality", "political" ]
+            },
+            {
+               "long_name" : "Paris",
+               "short_name" : "Paris",
+               "types" : [ "locality", "political" ]
+            },
+            {
+               "long_name" : "Paris",
+               "short_name" : "75",
+               "types" : [ "administrative_area_level_2", "political" ]
+            },
+            {
+               "long_name" : "Île-de-France",
+               "short_name" : "IDF",
+               "types" : [ "administrative_area_level_1", "political" ]
+            },
+            {
+               "long_name" : "France",
+               "short_name" : "FR",
+               "types" : [ "country", "political" ]
+            },
+            {
+               "long_name" : "75006",
+               "short_name" : "75006",
+               "types" : [ "postal_code" ]
+            }
+         ],
+         "formatted_address" : "60 Rue de Seine, 75006 Paris, France",
+         "geometry" : {
+            "location" : {
+               "lat" : 48.853492,
+               "lng" : 2.336923
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 48.85484098029151,
+                  "lng" : 2.338271980291502
+               },
+               "southwest" : {
+                  "lat" : 48.85214301970851,
+                  "lng" : 2.335574019708499
+               }
+            }
+         },
+         "types" : [ "street_address" ]
       }
-    },
-    "Point": {
-      "coordinates": [ 2.3369433, 48.8537950, 0 ]
-    }
-  } ]
+   ],
+   "status" : "OK"
 }';
         break;
     }

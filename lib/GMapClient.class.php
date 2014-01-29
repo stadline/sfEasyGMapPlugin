@@ -28,8 +28,7 @@ class GMapClient
    */
   protected $api_keys = null;
 
-  const API_URL = 'http://maps.google.com/maps/geo?';
-  const JS_URL  = 'http://maps.google.com/maps/api/js?sensor=false';
+  const API_URL = 'http://maps.googleapis.com/maps/api/geocode/%output%?sensor=false%query%';
 
   /**
    *
@@ -190,25 +189,28 @@ class GMapClient
    * Connection to Google Maps' API web service
    *
    * @param string $address
-   * @param string $format 'csv' or 'xml'
+   * @param string $format 'json' @deprecated
    * @return string
    * @author fabriceb
    * @since 2009-06-17
    */
-  public function getGeocodingInfo($address, $format = 'csv')
+  public function getGeocodingInfo($address, $format = 'json')
   {
     if ($this->hasCache())
     {
       $cache = $this->getCache()->get($format.$address);
       if ($cache)
       {
-
         return $cache;
       }
     }
-
-    $apiURL = self::API_URL.'&output='.$format.'&key='.$this->getAPIKey().'&q='.urlencode($address);
-    $raw_data = @file_get_contents($apiURL);
+    
+    $apiParameters = array(
+        '%output%' => $format,
+        '%query%' => '&address='.urlencode($address),
+    );
+    $apiURL = str_replace(array_keys($apiParameters), array_values($apiParameters), self::API_URL);
+    $raw_data = file_get_contents($apiURL);
 
     if ($this->hasCache())
     {
@@ -238,7 +240,6 @@ class GMapClient
    */
   public function getCache()
   {
-
     return $this->cache;
   }
 
@@ -253,7 +254,6 @@ class GMapClient
    */
   public function hasCache()
   {
-
     return $this->cache instanceof sfCache;
   }
 
@@ -266,7 +266,7 @@ class GMapClient
    */
   public function getGoogleJsUrl($auto_load = true, $language = null, $region = null)
   {
-    $js_url = self::JS_URL;
+    $js_url = 'http://maps.googleapis.com/maps/api/js?sensor=false';
 
     if ($language !== null)
     {
@@ -290,7 +290,11 @@ class GMapClient
    */
   public function getReverseGeocodingInfo($lat, $lng)
   {
-    $apiURL = 'http://maps.google.com/maps/geo?ll='.$lat.','.$lng;
+    $apiParameters = array(
+        '%output%' => 'json',
+        '%query%' => '&ll='.$lat.','.$lng,
+    );
+    $apiURL = str_replace(array_keys($apiParameters), array_values($apiParameters), self::API_URL);
     $raw_data = file_get_contents($apiURL);
 
     return $raw_data;

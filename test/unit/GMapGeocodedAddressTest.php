@@ -20,14 +20,10 @@ $gMapClientTestCache = new GMapClientTestCache();
 $gMapClient->setCache($gMapClientTestCache);
 
 $t->diag('->geocode');
-$t->is($gAddress->geocode($gMapClient),8,'Geocoded returned accuracy 8');
-$t->is($gAddress->getLat(),48.8537950,'Lat ok');
-$t->is($gAddress->getLng(),2.3369433,'Lng ok');
-$t->is($gAddress->getAccuracy(),8,'Accuracy ok');
-$t->is($gAddress->geocodeXml($gMapClient),8,'Geocoded returned accuracy 8');
-$t->is($gAddress->getLat(),48.8537950,'Lat ok');
-$t->is($gAddress->getLng(),2.3369433,'Lng ok');
-$t->is($gAddress->getAccuracy(),8,'Accuracy ok');
+$t->is($gAddress->geocode($gMapClient),'ROOFTOP','Geocoded ok');
+$t->is($gAddress->getLat(),48.853492,'Lat ok');
+$t->is($gAddress->getLng(),2.336923,'Lng ok');
+$t->is($gAddress->getAccuracy(),'ROOFTOP','Accuracy ok');
 $t->is($gAddress->getGeocodedAddress(),'60 Rue de Seine, 75006 Paris, France','Normalized address ok');
 $t->is($gAddress->getGeocodedCity(),'Paris','Normalized City ok');
 $t->is($gAddress->getGeocodedCountry(),'France','Normalized Country ok');

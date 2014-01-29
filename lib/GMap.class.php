@@ -276,22 +276,6 @@ class GMap
   }
 
   /**
-   * Geocodes an address and returns additional normalized information
-   * @param string $address
-   * @return GMapGeocodedAddress
-   * @author Fabrice Bernhard
-   */
-  public function geocodeXml($address)
-  {
-    $address = trim($address);
-
-    $gMapGeocodedAddress = new GMapGeocodedAddress($address);
-    $gMapGeocodedAddress->geocodeXml($this->getGMapClient());
-
-    return $gMapGeocodedAddress;
-  }
-
-  /**
    * @return string $this->options['js_name'] Javascript name of the googlemap
    */
   public function getJsName()

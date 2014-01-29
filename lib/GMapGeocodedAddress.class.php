@@ -18,7 +18,6 @@ class GMapGeocodedAddress
   protected $geocoded_street       = null;
   protected $geocoded_postal_code  = null;
 
-
   /**
    * Constructs a gMapGeocodedAddress object from a given $raw_address String
    *
@@ -38,7 +37,6 @@ class GMapGeocodedAddress
    */
   public function getRawAddress()
   {
-
     return $this->raw_address;
   }
 
@@ -54,16 +52,40 @@ class GMapGeocodedAddress
   public function geocode($gmap_client)
   {
     $raw_data = $gmap_client->getGeocodingInfo($this->getRawAddress());
-    $geocoded_array = explode(',',$raw_data);
-    if ($geocoded_array[0]!=200)
+    $geocoded_array = json_decode($raw_data, true);
+    
+    if ($geocoded_array['status'] != 'OK')
     {
-
       return false;
     }
-    $this->lat      = $geocoded_array[2];
-    $this->lng      = $geocoded_array[3];
-    $this->accuracy = $geocoded_array[1];
-
+    
+    $first_result = $geocoded_array['results'][0];
+    
+    $this->geocoded_address = $first_result['formatted_address'];
+    $this->lat              = $first_result['geometry']['location']['lat'];
+    $this->lng              = $first_result['geometry']['location']['lng'];
+    $this->accuracy         = $first_result['geometry']['location_type'];
+    
+    foreach ($first_result['address_components'] as $address_component)
+    {
+        if (in_array('locality', $address_component['types'])) {
+            $this->geocoded_city = $address_component['long_name'];
+        }
+        if (in_array('country', $address_component['types'])) {
+            $this->geocoded_country = $address_component['long_name'];
+            $this->geocoded_country_code = $address_component['short_name'];
+        }
+        if (in_array('street_number', $address_component['types'])) {
+            $this->geocoded_street = $address_component['long_name'] + ' ' + $this->geocoded_street;
+        }
+        if (in_array('route', $address_component['types'])) {
+            $this->geocoded_street = $this->geocoded_street + ' ' + $address_component['long_name'];
+        }
+        if (in_array('postal_code', $address_component['types'])) {
+            $this->geocoded_postal_code = $address_component['short_name'];
+        }
+    }
+    
     return $this->accuracy;
   }
 
@@ -79,9 +101,8 @@ class GMapGeocodedAddress
     $raw_data = $gmap_client->getReverseGeocodingInfo($this->getLat(), $this->getLng());
     $geocoded_array = json_decode($raw_data, true);
 
-    if ($geocoded_array['Status']['code'] != 200)
+    if ($geocoded_array['status'] != 'OK')
     {
-
       return false;
     }
 
@@ -98,59 +119,11 @@ class GMapGeocodedAddress
   }
 
   /**
-   * Geocodes the address using the Google Maps XML webservice, which has more information.
-   * Unknown values will be set to NULL.
-   * @param GMapClient $gmap_client
-   * @return integer $accuracy
-   * @author Fabrice Bernhard
-   */
-  public function geocodeXml($gmap_client)
-  {
-    $raw_data = utf8_encode($gmap_client->getGeocodingInfo($this->getRawAddress(),'xml'));
-
-    $p = xml_parser_create('UTF-8');
-    xml_parse_into_struct($p, $raw_data, $vals, $index);
-    xml_parser_free($p);
-
-    if ($vals[$index['CODE'][0]]['value'] != 200)
-    {
-
-      return false;
-    }
-
-    $coordinates = $vals[$index['COORDINATES'][0]]['value'];
-    list($this->lng, $this->lat) = explode(',', $coordinates);
-
-    $this->accuracy = $vals[$index['ADDRESSDETAILS'][0]]['attributes']['ACCURACY'];
-
-    // We voluntarily silence errors, the values will still be set to NULL if the array indexes are not defined
-    @$this->geocoded_address = $vals[$index['ADDRESS'][0]]['value'];
-    @$this->geocoded_street = $vals[$index['THOROUGHFARENAME'][0]]['value'];
-    @$this->geocoded_postal_code = $vals[$index['POSTALCODENUMBER'][0]]['value'];
-    @$this->geocoded_country = $vals[$index['COUNTRYNAME'][0]]['value'];
-    @$this->geocoded_country_code = $vals[$index['COUNTRYNAMECODE'][0]]['value'];
-
-    @$this->geocoded_city = $vals[$index['LOCALITYNAME'][0]]['value'];
-    if (empty($this->geocoded_city))
-    {
-      @$this->geocoded_city = $vals[$index['SUBADMINISTRATIVEAREANAME'][0]]['value'];
-    }
-    if (empty($this->geocoded_city))
-    {
-      @$this->geocoded_city = $vals[$index['ADMINISTRATIVEAREANAME'][0]]['value'];
-    }
-
-    return $this->accuracy;
-  }
-
-
-  /**
    * Returns the latitude
    * @return float $latitude
    */
   public function getLat()
   {
-
     return $this->lat;
   }
 
@@ -160,7 +133,6 @@ class GMapGeocodedAddress
    */
   public function getLng()
   {
-
     return $this->lng;
   }
 
@@ -170,7 +142,6 @@ class GMapGeocodedAddress
    */
   public function getAccuracy()
   {
-
     return $this->accuracy;
   }
 
@@ -180,7 +151,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedAddress()
   {
-
     return $this->geocoded_address;
   }
 
@@ -190,7 +160,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedCity()
   {
-
     return $this->geocoded_city;
   }
 
@@ -200,7 +169,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedCountryCode()
   {
-
     return $this->geocoded_country_code;
   }
 
@@ -210,7 +178,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedCountry()
   {
-
     return $this->geocoded_country;
   }
 
@@ -220,7 +187,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedPostalCode()
   {
-
     return $this->geocoded_postal_code;
   }
 
@@ -230,7 +196,6 @@ class GMapGeocodedAddress
    */
   public function getGeocodedStreet()
   {
-
     return $this->geocoded_street;
   }
 
@@ -314,6 +279,4 @@ class GMapGeocodedAddress
   {
     $this->geocoded_postal_code = $val;
   }
-
-
 }
